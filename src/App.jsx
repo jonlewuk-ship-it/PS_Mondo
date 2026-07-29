@@ -520,8 +520,8 @@ export default function PratolaniNelMondo(){
       <section style={{padding:"24px 16px",maxWidth:680,margin:"0 auto"}}>
         <div style={{background:"linear-gradient(135deg,#111827,#1a2b45)",borderRadius:16,padding:24,border:"1px solid #1a2b45",textAlign:"center"}}>
           <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:8}}>{lang==="it"?"Creato da":"Created by"}</div>
-          <div style={{fontSize:20,fontWeight:700,fontFamily:"'Playfair Display',serif",color:"#F6F1E7",marginBottom:4}}>Antonio Michael De Palma</div>
-          <div style={{fontSize:13,color:"#D4A853",fontStyle:"italic",marginBottom:12}}>Tony De Palma</div>
+          <div style={{fontSize:20,fontWeight:700,fontFamily:"'Playfair Display',serif",color:"#F6F1E7",marginBottom:4}}>Tony De Palma</div>
+          <div style={{fontSize:13,color:"#D4A853",fontStyle:"italic",marginBottom:12}}></div>
           <div style={{fontSize:12,color:"#888",lineHeight:1.7,maxWidth:420,margin:"0 auto"}}>
             {lang==="it"
               ?"Fondatore e amministratore del gruppo Facebook 'Pratolani nel Mondo' dal 2014. Questo progetto nasce dall'amore per Pratola Serra e dal desiderio di connettere tutti i Pratolani sparsi nel mondo con le proprie radici e la propria storia."
