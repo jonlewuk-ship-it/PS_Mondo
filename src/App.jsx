@@ -111,6 +111,17 @@ function AnimCount({target,duration=1500}){
   return <span ref={ref}>{val}</span>;
 }
 
+
+// ── PHOTO GALLERY DATA ─────────────────────────────────────────────
+const PHOTOS = [
+  {id:0, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Panorama_di_Pratola_Serra.jpg/1280px-Panorama_di_Pratola_Serra.jpg", alt:"Panorama di Pratola Serra", captionIt:"Panorama di Pratola Serra", captionEn:"Panorama of Pratola Serra", descIt:"Vista panoramica del borgo collinare sulla Valle del Sabato, 280m s.l.m.", descEn:"Panoramic view of the hilltop town above the Sabato Valley, 280m above sea level."},
+  {id:1, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Chiesa_madre_di_Pratola_Serra.jpg/800px-Chiesa_madre_di_Pratola_Serra.jpg", alt:"Chiesa Madre di Pratola Serra", captionIt:"Chiesa di Maria SS. Addolorata", captionEn:"Church of Maria SS. Addolorata", descIt:"La chiesa madre nel cuore di Pratola, sede della festa patronale ogni prima domenica di settembre.", descEn:"The mother church in the heart of Pratola, home to the patron saint festival every first Sunday of September."},
+  {id:2, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Pratola_Serra_-_Ruderi_del_Castello.jpg/800px-Pratola_Serra_-_Ruderi_del_Castello.jpg", alt:"Ruderi del Castello", captionIt:"I Ruderi del Castello", captionEn:"The Castle Ruins", descIt:"Le rovine del castello medievale di Serra di Pratola, che domina la valle dall'alto della collina.", descEn:"The medieval castle ruins of Serra di Pratola, overlooking the valley from the hilltop."},
+  {id:3, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Stewartby_Brickworks_-_geograph.org.uk_-_305820.jpg/1280px-Stewartby_Brickworks_-_geograph.org.uk_-_305820.jpg", alt:"Stewartby Brickworks", captionIt:"Stewartby Brickworks, Bedford", captionEn:"Stewartby Brickworks, Bedford", descIt:"La più grande fabbrica di mattoni del mondo negli anni '50, dove lavorarono centinaia di Pratolani.", descEn:"The world's largest brickworks in the 1950s, where hundreds of Pratolani worked."},
+  {id:4, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Ellis_island_1902.jpg/1280px-Ellis_island_1902.jpg", alt:"Ellis Island", captionIt:"Ellis Island, c. 1902", captionEn:"Ellis Island, c. 1902", descIt:"La porta d'ingresso per milioni di emigranti italiani, incluse le famiglie Altavilla e Pisano di Pratola Serra.", descEn:"The gateway for millions of Italian immigrants, including the Altavilla and Pisano families from Pratola Serra."},
+  {id:5, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Taurasi_vineyards.jpg/1280px-Taurasi_vineyards.jpg", alt:"Vigneti del Taurasi", captionIt:"I Vigneti del Taurasi DOCG", captionEn:"Taurasi DOCG Vineyards", descIt:"Le colline dell'Irpinia che producono il Taurasi, il 'Barolo del Sud', uno dei più grandi vini italiani.", descEn:"The hills of Irpinia that produce Taurasi, the 'Barolo of the South', one of Italy's greatest wines."},
+];
+
 // ── MAIN APP ───────────────────────────────────────────────────────
 export default function PratolaniNelMondo(){
   const[pins,setPins]=useState(SEED_DATA);
@@ -119,6 +130,7 @@ export default function PratolaniNelMondo(){
   const[leafletReady,setLeafletReady]=useState(false);
   const[loaded,setLoaded]=useState(false);
   const[lang,setLang]=useState("it");
+  const[lightbox,setLightbox]=useState(null);
   const mapRef=useRef(null);
   const mapInstance=useRef(null);
   const markersRef=useRef([]);
@@ -249,11 +261,24 @@ export default function PratolaniNelMondo(){
     input.click();
   };
 
+  const T=(it,en)=>lang==="it"?it:en;
   const IS={width:"100%",padding:"10px 12px",borderRadius:8,border:"1px solid #333",fontSize:14,fontFamily:"'Source Sans 3',sans-serif",color:"#F6F1E7",background:"#1a1a2e",outline:"none",boxSizing:"border-box"};
 
   return(
     <div style={{background:"#0B1320",color:"#F6F1E7",fontFamily:"'Source Sans 3','Inter',system-ui,sans-serif",minHeight:"100vh"}}>
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+      {/* ═══ LIGHTBOX MODAL ═══ */}
+      {lightbox!==null&&<div onClick={()=>setLightbox(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"zoom-out",padding:16}}>
+        <button onClick={()=>setLightbox(null)} style={{position:"absolute",top:16,right:20,background:"none",border:"none",color:"#D4A853",fontSize:32,cursor:"pointer",zIndex:10000}}>✕</button>
+        <div style={{maxWidth:900,width:"100%",animation:"fadeUp 0.3s ease"}}>
+          <img src={PHOTOS[lightbox]?.src} alt={PHOTOS[lightbox]?.alt} style={{width:"100%",borderRadius:12,boxShadow:"0 20px 60px rgba(0,0,0,0.8)"}} onError={e=>{e.target.style.display="none";}}/>
+          <div style={{textAlign:"center",marginTop:16}}>
+            <div style={{fontSize:18,fontWeight:700,color:"#F6F1E7",fontFamily:"'Playfair Display',serif"}}>{lang==="it"?PHOTOS[lightbox]?.captionIt:PHOTOS[lightbox]?.captionEn}</div>
+            <div style={{fontSize:12,color:"#888",marginTop:6}}>{lang==="it"?PHOTOS[lightbox]?.descIt:PHOTOS[lightbox]?.descEn}</div>
+          </div>
+        </div>
+      </div>}
+
       <style>{`
         .dark-popup .leaflet-popup-content-wrapper{background:#1a1a2e!important;border:1px solid #333!important;border-radius:12px!important;color:#F6F1E7!important;box-shadow:0 8px 32px rgba(0,0,0,.5)!important}
         .dark-popup .leaflet-popup-tip{background:#1a1a2e!important;border:1px solid #333!important}
@@ -441,61 +466,57 @@ export default function PratolaniNelMondo(){
           {era:"Today",title:"3,700 at Home, 2,000+ Connected Worldwide",text:"Pratola Serra sits at 280 meters above sea level, its frazioni — Serra di Pratola, San Michele, Nocione, Acquaviva, Saudelle, Cocciacavallo — still carrying the rhythms of Irpinian life. The Festa della Madonna Addolorata and San Gerardo fills the streets on the first Sunday of September. The land produces Taurasi DOCG, Greco di Tufo, and Fiano di Avellino — three of Italy's finest wines. And the Pratolani nel Mondo Facebook group has connected over 2,000 diaspora members since 2014 across every continent.",color:"#D4A853"},
         ].map((item,i)=>(
           <div key={i} style={{display:"flex",gap:16,marginBottom:28,position:"relative"}}>
-            <div style={{width:3,background:`linear-gradient(${item.color}88, ${item.color}22)`,borderRadius:2,flexShrink:0,marginLeft:8}}/>
-            <div>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,width:32}}>
+              <div style={{width:32,height:32,borderRadius:"50%",background:`${item.color}22`,border:`2px solid ${item.color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,marginBottom:4}}>{item.icon}</div>
+              <div style={{flex:1,width:2,background:`linear-gradient(${item.color}66, ${item.color}11)`,borderRadius:1}}/>
+            </div>
+            <div style={{flex:1,paddingBottom:8}}>
               <div style={{fontSize:11,fontWeight:700,color:item.color,letterSpacing:2,textTransform:"uppercase",marginBottom:4,fontFamily:"'JetBrains Mono',monospace"}}>{item.era}</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#F6F1E7",marginBottom:6,fontFamily:"'Playfair Display',serif"}}>{item.title}</div>
-              <div style={{fontSize:13,color:"#999",lineHeight:1.7}}>{item.text}</div>
+              <div style={{fontSize:17,fontWeight:700,color:"#F6F1E7",marginBottom:8,fontFamily:"'Playfair Display',serif",lineHeight:1.3}}>{item.title}</div>
+              <div style={{fontSize:13,color:"#999",lineHeight:1.8}}>{item.text}</div>
             </div>
           </div>
         ))}
       </section>
 
-      {/* ═══ PHOTO GALLERY PLACEHOLDER ═══ */}
-      <section style={{padding:"20px 16px 32px",maxWidth:680,margin:"0 auto"}}>
-        <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:6}}>{lang==="it"?"Dall'Archivio del Gruppo":"From the Group Archive"}</div>
-        <h2 style={{fontSize:20,fontWeight:800,fontFamily:"'Playfair Display',serif",margin:"0 0 16px"}}>{lang==="it"?"Ricordi del Nostro Paese":"Memories of Our Town"}</h2>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-          {[
-            {label:"The Castle Ruins",sub:"Serra di Pratola"},
-            {label:"Corso Vittorio Emanuele",sub:"c. 1920s"},
-            {label:"Church of M. Addolorata",sub:"Festa"},
-            {label:"Brick Workers",sub:"Bedford, 1950s"},
-            {label:"Ellis Island Arrivals",sub:"Pratolani, c. 1905"},
-            {label:"FIAT FMA Plant",sub:"Pratola Serra"},
-          ].map((ph,i)=>(
-            <div key={i} style={{
-              aspectRatio:"1",borderRadius:12,
-              background:`linear-gradient(135deg, #1a2b4566, #111827)`,
-              border:"1px solid #1a2b45",display:"flex",flexDirection:"column",
-              alignItems:"center",justifyContent:"center",padding:12,textAlign:"center",
-              position:"relative",overflow:"hidden",
-            }}>
-              <div style={{fontSize:28,marginBottom:6,opacity:0.3}}>📷</div>
-              <div style={{fontSize:11,fontWeight:600,color:"#888"}}>{ph.label}</div>
-              <div style={{fontSize:9,color:"#555",marginTop:2}}>{ph.sub}</div>
-              <div style={{position:"absolute",inset:0,background:"repeating-linear-gradient(45deg,transparent,transparent 10px,#ffffff03 10px,#ffffff03 11px)"}}/>
+      {/* ═══ PHOTO GALLERY ═══ */}
+      <section style={{padding:"32px 16px 40px",maxWidth:780,margin:"0 auto"}}>
+        <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:6}}>{lang==="it"?"Immagini del Nostro Paese":"Images of Our Town"}</div>
+        <h2 style={{fontSize:22,fontWeight:800,fontFamily:"'Playfair Display',serif",margin:"0 0 8px"}}>{lang==="it"?"Pratola Serra in Immagini":"Pratola Serra in Pictures"}</h2>
+        <p style={{fontSize:13,color:"#777",marginBottom:20,lineHeight:1.6}}>{lang==="it"?"Tocca una foto per ingrandirla. Dalle rovine del castello alla Valle del Sabato, dai vigneti del Taurasi alle fabbriche di mattoni di Bedford — le immagini della nostra storia.":"Tap a photo to enlarge. From the castle ruins to the Sabato Valley, from Taurasi vineyards to the Bedford brickworks — images of our story."}</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:10}}>
+          {PHOTOS.map((ph,i)=>(
+            <div key={i} onClick={()=>setLightbox(i)} style={{
+              aspectRatio:"4/3",borderRadius:12,overflow:"hidden",cursor:"zoom-in",
+              position:"relative",border:"1px solid #1a2b45",
+              transition:"transform 0.3s, box-shadow 0.3s",
+            }}
+            onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.03)";e.currentTarget.style.boxShadow="0 8px 30px rgba(212,168,83,0.2)";}}
+            onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="none";}}>
+              <img src={ph.src} alt={ph.alt} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}
+                onError={e=>{e.target.style.display="none";e.target.parentElement.style.background="linear-gradient(135deg,#1a2b4566,#111827)";}}/>
+              <div style={{position:"absolute",bottom:0,left:0,right:0,background:"linear-gradient(transparent,rgba(0,0,0,0.85))",padding:"20px 10px 8px"}}>
+                <div style={{fontSize:11,fontWeight:700,color:"#F6F1E7"}}>{lang==="it"?ph.captionIt:ph.captionEn}</div>
+              </div>
+              <div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.5)",borderRadius:20,padding:"2px 8px",fontSize:9,color:"#D4A853"}}>🔍</div>
             </div>
           ))}
         </div>
-        <p style={{fontSize:11,color:"#555",textAlign:"center",marginTop:12,fontStyle:"italic"}}>
-          {lang==="it"?"Sostituisci questi segnaposto con foto reali dall'archivio del gruppo Pratolani nel Mondo. Condividi il link su Facebook!":"Replace these placeholders with real photos from the Pratolani nel Mondo group archive. Share the link on Facebook!"}
-        </p>
       </section>
 
       {/* ═══ WINES & FOOD ═══ */}
       <section style={{padding:"20px 16px",maxWidth:680,margin:"0 auto"}}>
         <div style={{background:"linear-gradient(135deg,#1a0f05,#2a1a0a)",borderRadius:16,padding:24,border:"1px solid #3a2515"}}>
-          <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:8}}>{lang==="it"?"Sapori di Casa":"Tastes of Home"}</div>
-          <h3 style={{fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",margin:"0 0 12px",color:"#F6F1E7"}}>{lang==="it"?"I Sapori di Pratola Serra":"The Tastes of Pratola Serra"}</h3>
+          <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:8}}>{T("Sapori di Casa","Tastes of Home")}</div>
+          <h3 style={{fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",margin:"0 0 12px",color:"#F6F1E7"}}>{T("I Sapori di Pratola Serra","The Tastes of Pratola Serra")}</h3>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,fontSize:12,color:"#bba080",lineHeight:1.7}}>
             <div>
-              <div style={{fontWeight:700,color:"#D4A853",marginBottom:4}}>🍷 Three DOCG Wines</div>
-              <div>Taurasi, Greco di Tufo, and Fiano di Avellino — three of the finest wines Campania (and Italy) has to offer, all produced in the hills surrounding Pratola Serra.</div>
+              <div style={{fontWeight:700,color:"#D4A853",marginBottom:4}}>🍷 {T("Tre Vini DOCG","Three DOCG Wines")}</div>
+              <div>{T("Taurasi, Greco di Tufo e Fiano di Avellino — tre dei migliori vini della Campania e d'Italia, prodotti nelle colline attorno a Pratola Serra.","Taurasi, Greco di Tufo, and Fiano di Avellino — three of the finest wines Campania and Italy have to offer, produced in the hills surrounding Pratola Serra.")}</div>
             </div>
             <div>
-              <div style={{fontWeight:700,color:"#D4A853",marginBottom:4}}>🧀 Local Specialties</div>
-              <div>Caciocavallo, scamorza, soppressata, sausage. Handmade pasta: cavatielli, lagane, maccaronara. And the prized truffle of nearby Bagnoli Irpino.</div>
+              <div style={{fontWeight:700,color:"#D4A853",marginBottom:4}}>🧀 {T("Specialità Locali","Local Specialties")}</div>
+              <div>{T("Caciocavallo, scamorza, soppressata. Pasta fatta in casa: cavatielli, lagane, maccaronara. E il pregiato tartufo di Bagnoli Irpino.","Caciocavallo, scamorza, soppressata. Handmade pasta: cavatielli, lagane, maccaronara. And the prized truffle of nearby Bagnoli Irpino.")}</div>
             </div>
           </div>
         </div>
@@ -504,7 +525,7 @@ export default function PratolaniNelMondo(){
       {/* ═══ CTA ═══ */}
       <section style={{padding:"40px 16px 24px",textAlign:"center",maxWidth:500,margin:"0 auto"}}>
         <div style={{fontSize:28,fontWeight:800,fontFamily:"'Playfair Display',serif",lineHeight:1.2,marginBottom:12}}>
-          Your Name.<br/>Your City.<br/><span style={{color:"#D4A853"}}>Your Pin.</span>
+          {T("Il Tuo Nome.","Your Name.")}<br/>{T("La Tua Città.","Your City.")}<br/><span style={{color:"#D4A853"}}>{T("Il Tuo Pin.","Your Pin.")}</span>
         </div>
         <p style={{fontSize:13,color:"#666",marginBottom:20}}>
           {lang==="it"?"Ogni pin su questa mappa è un ramo dello stesso albero. Aggiungi il tuo e aiutaci a raccontare dove vivono oggi i Pratolani.":"Every pin on this map is a branch of the same tree. Add yours and help us tell the full story of where Pratolani live today."}
