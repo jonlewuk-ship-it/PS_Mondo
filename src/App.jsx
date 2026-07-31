@@ -1,5 +1,23 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
+
+// ── SUPABASE CONFIG (shared pin storage) ───────────────────────────
+const SUPABASE_URL = "https://sdeydcbsrzodokdloobn.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkZXlkY2JzcnpvZG9rZGxvb2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4OTc0NjIsImV4cCI6MjEwMDQ3MzQ2Mn0.jG-3YNMoBVHhgDLWYj3X3quyb_Iho87I8ByH2KCcP_s";
+const supaFetch = async (endpoint, options = {}) => {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+    ...options,
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": options.method === "POST" ? "return=representation" : undefined,
+      ...options.headers,
+    },
+  });
+  return res.json();
+};
+
 // ── PRE-SEEDED DIASPORA DATA (historically documented) ─────────────
 const SEED_DATA = [
   {id:"s1",name:"Giuseppe",surname:"Altavilla",city:"Wilkes-Barre",country:"USA",lat:41.246,lng:-75.881,generation:"1st",frazione:"Serra di Pratola",story:"Worked for D&H Railroad, lived at 11 Solomon Street. His family's journey through Ellis Island in the early 1900s connected Pratola Serra to Pennsylvania forever."},
@@ -114,12 +132,12 @@ function AnimCount({target,duration=1500}){
 
 // ── PHOTO GALLERY DATA ─────────────────────────────────────────────
 const PHOTOS = [
-  {id:0, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Panorama_di_Pratola_Serra.jpg/1280px-Panorama_di_Pratola_Serra.jpg", alt:"Panorama di Pratola Serra", captionIt:"Panorama di Pratola Serra", captionEn:"Panorama of Pratola Serra", descIt:"Vista panoramica del borgo collinare sulla Valle del Sabato, 280m s.l.m.", descEn:"Panoramic view of the hilltop town above the Sabato Valley, 280m above sea level."},
-  {id:1, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Chiesa_madre_di_Pratola_Serra.jpg/800px-Chiesa_madre_di_Pratola_Serra.jpg", alt:"Chiesa Madre di Pratola Serra", captionIt:"Chiesa di Maria SS. Addolorata", captionEn:"Church of Maria SS. Addolorata", descIt:"La chiesa madre nel cuore di Pratola, sede della festa patronale ogni prima domenica di settembre.", descEn:"The mother church in the heart of Pratola, home to the patron saint festival every first Sunday of September."},
-  {id:2, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Pratola_Serra_-_Ruderi_del_Castello.jpg/800px-Pratola_Serra_-_Ruderi_del_Castello.jpg", alt:"Ruderi del Castello", captionIt:"I Ruderi del Castello", captionEn:"The Castle Ruins", descIt:"Le rovine del castello medievale di Serra di Pratola, che domina la valle dall'alto della collina.", descEn:"The medieval castle ruins of Serra di Pratola, overlooking the valley from the hilltop."},
-  {id:3, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Stewartby_Brickworks_-_geograph.org.uk_-_305820.jpg/1280px-Stewartby_Brickworks_-_geograph.org.uk_-_305820.jpg", alt:"Stewartby Brickworks", captionIt:"Stewartby Brickworks, Bedford", captionEn:"Stewartby Brickworks, Bedford", descIt:"La più grande fabbrica di mattoni del mondo negli anni '50, dove lavorarono centinaia di Pratolani.", descEn:"The world's largest brickworks in the 1950s, where hundreds of Pratolani worked."},
-  {id:4, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Ellis_island_1902.jpg/1280px-Ellis_island_1902.jpg", alt:"Ellis Island", captionIt:"Ellis Island, c. 1902", captionEn:"Ellis Island, c. 1902", descIt:"La porta d'ingresso per milioni di emigranti italiani, incluse le famiglie Altavilla e Pisano di Pratola Serra.", descEn:"The gateway for millions of Italian immigrants, including the Altavilla and Pisano families from Pratola Serra."},
-  {id:5, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Taurasi_vineyards.jpg/1280px-Taurasi_vineyards.jpg", alt:"Vigneti del Taurasi", captionIt:"I Vigneti del Taurasi DOCG", captionEn:"Taurasi DOCG Vineyards", descIt:"Le colline dell'Irpinia che producono il Taurasi, il 'Barolo del Sud', uno dei più grandi vini italiani.", descEn:"The hills of Irpinia that produce Taurasi, the 'Barolo of the South', one of Italy's greatest wines."},
+  {id:0, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Panorama_di_Pratola_Serra.jpg/1280px-Panorama_di_Pratola_Serra.jpg", alt:"Panorama di Pratola Serra", captionIt:"Panorama di Pratola Serra", captionEn:"Panorama of Pratola Serra", descIt:"Vista panoramica del borgo sulla Valle del Sabato, 280m s.l.m.", descEn:"Panoramic view of the town above the Sabato Valley, 280m a.s.l."},
+  {id:1, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Chiesa_madre_di_Pratola_Serra.jpg/800px-Chiesa_madre_di_Pratola_Serra.jpg", alt:"Chiesa Madre", captionIt:"Chiesa di Maria SS. Addolorata", captionEn:"Church of Maria SS. Addolorata", descIt:"La chiesa madre, sede della festa patronale ogni prima domenica di settembre.", descEn:"The mother church, home to the patron saint festival every first Sunday of September."},
+  {id:2, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Pratola_Serra_-_Ruderi_del_Castello.jpg/800px-Pratola_Serra_-_Ruderi_del_Castello.jpg", alt:"Ruderi del Castello", captionIt:"I Ruderi del Castello", captionEn:"The Castle Ruins", descIt:"Le rovine del castello medievale di Serra di Pratola.", descEn:"The medieval castle ruins of Serra di Pratola."},
+  {id:3, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Stewartby_Brickworks_-_geograph.org.uk_-_305820.jpg/1280px-Stewartby_Brickworks_-_geograph.org.uk_-_305820.jpg", alt:"Stewartby Brickworks", captionIt:"Stewartby Brickworks, Bedford", captionEn:"Stewartby Brickworks, Bedford", descIt:"La più grande fabbrica di mattoni del mondo anni '50, dove lavorarono centinaia di Pratolani.", descEn:"The world's largest brickworks in the 1950s, where hundreds of Pratolani worked."},
+  {id:4, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Ellis_island_1902.jpg/1280px-Ellis_island_1902.jpg", alt:"Ellis Island", captionIt:"Ellis Island, c. 1902", captionEn:"Ellis Island, c. 1902", descIt:"La porta d'ingresso per milioni di emigranti italiani, incluse le famiglie Altavilla e Pisano.", descEn:"The gateway for millions of Italian immigrants, including the Altavilla and Pisano families."},
+  {id:5, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Taurasi_vineyards.jpg/1280px-Taurasi_vineyards.jpg", alt:"Vigneti del Taurasi", captionIt:"I Vigneti del Taurasi DOCG", captionEn:"Taurasi DOCG Vineyards", descIt:"Le colline che producono il Taurasi, il 'Barolo del Sud'.", descEn:"The hills that produce Taurasi, the 'Barolo of the South'."},
 ];
 
 // ── MAIN APP ───────────────────────────────────────────────────────
@@ -142,7 +160,22 @@ export default function PratolaniNelMondo(){
   const[sugg,setSugg]=useState([]);
 
   // Load saved pins
-  useEffect(()=>{try{const v=localStorage.getItem(STORAGE_KEY);if(v){const saved=JSON.parse(v);if(saved.length>0)setPins([...SEED_DATA,...saved]);}}catch(e){}setLoaded(true);},[]);
+  useEffect(()=>{
+    (async()=>{
+      try{
+        // Load shared pins from Supabase
+        const dbPins=await supaFetch("pins?order=created_at.asc&limit=500");
+        if(Array.isArray(dbPins)&&dbPins.length>0){
+          const mapped=dbPins.map(p=>({id:p.id,name:p.name||"",surname:p.surname,city:p.city,country:p.country||"",lat:p.lat,lng:p.lng,generation:p.generation||"2nd",frazione:p.frazione||"",story:p.story||""}));
+          setPins([...SEED_DATA,...mapped]);
+        }
+      }catch(e){
+        // Fallback to localStorage if Supabase fails
+        try{const v=localStorage.getItem(STORAGE_KEY);if(v){const saved=JSON.parse(v);if(saved.length>0)setPins([...SEED_DATA,...saved]);}}catch(e2){}
+      }
+      setLoaded(true);
+    })();
+  },[]);
 
   // Save user pins only
   useEffect(()=>{if(!loaded)return;const userPins=pins.filter(p=>!p.id.startsWith("s"));try{localStorage.setItem(STORAGE_KEY,JSON.stringify(userPins));}catch(e){}},[pins,loaded]);
@@ -243,12 +276,15 @@ export default function PratolaniNelMondo(){
 
   const handleChange=(f,v)=>{setForm(p=>({...p,[f]:v}));if(f==="surname"&&v.length>=2)setSugg(KNOWN_SURNAMES.filter(s=>s.toLowerCase().startsWith(v.toLowerCase())).slice(0,5));else if(f==="surname")setSugg([]);if(f==="city"||f==="country")setNeedsCoords(false);};
 
-  const addPin=()=>{
+  const addPin=async()=>{
     if(!form.surname||!form.city)return;
     let c=lookupCity(form.city,form.country);
     if(!c&&needsCoords&&form.manualLat&&form.manualLng)c={lat:parseFloat(form.manualLat),lng:parseFloat(form.manualLng)};
     if(!c){setNeedsCoords(true);return;}
-    setPins(prev=>[...prev,{id:uid(),name:form.name,surname:form.surname,city:form.city,country:form.country,lat:c.lat,lng:c.lng,generation:form.generation,frazione:form.frazione}]);
+    const newPin={id:uid(),name:form.name,surname:form.surname,city:form.city,country:form.country,lat:c.lat,lng:c.lng,generation:form.generation,frazione:form.frazione};
+    setPins(prev=>[...prev,newPin]);
+    // Save to Supabase for shared visibility
+    try{await supaFetch("pins",{method:"POST",body:JSON.stringify({name:form.name,surname:form.surname,city:form.city,country:form.country,lat:c.lat,lng:c.lng,generation:form.generation,frazione:form.frazione})});}catch(e){console.warn("Supabase save failed, pin saved locally",e);}
     setForm({name:"",surname:"",city:"",country:"",frazione:"",generation:"2nd",manualLat:"",manualLng:""});
     setShowForm(false);setNeedsCoords(false);
   };
@@ -267,14 +303,14 @@ export default function PratolaniNelMondo(){
   return(
     <div style={{background:"#0B1320",color:"#F6F1E7",fontFamily:"'Source Sans 3','Inter',system-ui,sans-serif",minHeight:"100vh"}}>
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-      {/* ═══ LIGHTBOX MODAL ═══ */}
+      {/* ═══ LIGHTBOX ═══ */}
       {lightbox!==null&&<div onClick={()=>setLightbox(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"zoom-out",padding:16}}>
         <button onClick={()=>setLightbox(null)} style={{position:"absolute",top:16,right:20,background:"none",border:"none",color:"#D4A853",fontSize:32,cursor:"pointer",zIndex:10000}}>✕</button>
         <div style={{maxWidth:900,width:"100%",animation:"fadeUp 0.3s ease"}}>
           <img src={PHOTOS[lightbox]?.src} alt={PHOTOS[lightbox]?.alt} style={{width:"100%",borderRadius:12,boxShadow:"0 20px 60px rgba(0,0,0,0.8)"}} onError={e=>{e.target.style.display="none";}}/>
           <div style={{textAlign:"center",marginTop:16}}>
-            <div style={{fontSize:18,fontWeight:700,color:"#F6F1E7",fontFamily:"'Playfair Display',serif"}}>{lang==="it"?PHOTOS[lightbox]?.captionIt:PHOTOS[lightbox]?.captionEn}</div>
-            <div style={{fontSize:12,color:"#888",marginTop:6}}>{lang==="it"?PHOTOS[lightbox]?.descIt:PHOTOS[lightbox]?.descEn}</div>
+            <div style={{fontSize:18,fontWeight:700,color:"#F6F1E7",fontFamily:"'Playfair Display',serif"}}>{T(PHOTOS[lightbox]?.captionIt,PHOTOS[lightbox]?.captionEn)}</div>
+            <div style={{fontSize:12,color:"#888",marginTop:6}}>{T(PHOTOS[lightbox]?.descIt,PHOTOS[lightbox]?.descEn)}</div>
           </div>
         </div>
       </div>}
@@ -456,18 +492,18 @@ export default function PratolaniNelMondo(){
         <h2 style={{fontSize:22,fontWeight:800,fontFamily:"'Playfair Display',serif",margin:"0 0 24px"}}>{lang==="it"?"5.000 Anni di Pratola Serra":"5,000 Years of Pratola Serra"}</h2>
 
         {[
-          {era:"3000 BC",title:"The First Inhabitants",text:"Stone tools, blades, and arrowheads found in the soil of Pratola — evidence of human settlement stretching back to the Late Neolithic. Five distinct historical layers lie beneath the town, from Prehistory to the Medieval era.",color:"#666"},
-          {era:"5th–7th Century",title:"The Longobard Church",text:"In 1981, while building earthquake relief housing, workers unearthed the walls of a Longobard-era church and the remains of an ancient Roman villa with its own thermal baths. These discoveries placed Pratola Serra on the 'Longobard Ways Across Europe' — a cultural itinerary connecting Longobard heritage sites across the continent.",color:"#9B6B9E"},
-          {era:"1500s–1806",title:"The Tocco Feudal Era & The Bourbon Prison Saying",text:"For centuries, the settlement belonged to the Tocco family of Montemiletto. An old Irpinian saying — 'Puozzi passà p'a Pratola' ('May you pass through Pratola') — was actually a curse: the road to the notorious Bourbon Prison of Montefusco ran through Pratola's main street. To wish someone that passage was to wish them imprisonment.",color:"#C25B3A"},
-          {era:"1812",title:"The Birth of a Comune",text:"Pratola and Serra, two villages separated by a hill and a river, merged into a single municipality by Napoleonic decree. Serra di Pratola, the older settlement, perched around its medieval castle above the Sabato Valley. Pratola stretched along the ancient road to Puglia below.",color:"#D4A853"},
-          {era:"1880s–1920s",title:"The Great Emigration to America",text:"As poverty and unemployment gripped Southern Italy, Pratolani began the journey to America through Ellis Island. The Altavilla family traveled to Wilkes-Barre, Pennsylvania, where Giuseppe found work building railroads for the D&H Railroad Company. His brother Antonio opened a barber shop in Orange, New Jersey. The Pisano family followed in 1898. By 1920, Pratolani communities had taken root across Pennsylvania, New York, and New England.",color:"#D4A853"},
-          {era:"1950s",title:"The Bedford Brickworkers",text:"The London Brick Company launched recruitment drives in Naples and Southern Italy. Thousands of Campanian workers — including men from Pratola Serra — traveled to Bedford, England to work at the Stewartby Brickworks, then the largest in the world, producing 500 million bricks per year. Bedford's Italian population grew to 20-30% of the town. Midland Road became 'Little Italy.' An Italian Vice Consulate opened in 1954. The community remains one of England's largest Italian populations outside London.",color:"#C25B3A"},
-          {era:"1980s",title:"Alfa Romeo & FIAT Come to Town",text:"A joint venture between Alfa Romeo and Nissan brought an automobile factory to Pratola Serra — producing the Arna and Alfa 33. In 1994, FIAT transformed the site into the FMA (Fabbrica Motori Automobilistici), a state-of-the-art engine plant producing up to 600,000 engines per year for Fiat, Alfa Romeo, Lancia, and Opel. The legendary 'Pratola Serra' engine family — including the fierce 2.0 Turbo 20V putting out 217 horsepower — bore the town's name on engineering specifications worldwide.",color:"#2E5E3F"},
-          {era:"Today",title:"3,700 at Home, 2,000+ Connected Worldwide",text:"Pratola Serra sits at 280 meters above sea level, its frazioni — Serra di Pratola, San Michele, Nocione, Acquaviva, Saudelle, Cocciacavallo — still carrying the rhythms of Irpinian life. The Festa della Madonna Addolorata and San Gerardo fills the streets on the first Sunday of September. The land produces Taurasi DOCG, Greco di Tufo, and Fiano di Avellino — three of Italy's finest wines. And the Pratolani nel Mondo Facebook group has connected over 2,000 diaspora members since 2014 across every continent.",color:"#D4A853"},
-        ].map((item,i)=>(
+          {era:"3000 BC",title:T("I Primi Abitanti","The First Inhabitants"),text:T("Strumenti litici, lame e punte di freccia nel terreno — cinque strati storici sotto il paese, dalla Preistoria al Medioevo.","Stone tools, blades, and arrowheads in the soil — five historical layers beneath the town, from Prehistory to Medieval."),color:"#666",icon:"🪨"},
+          {era:T("V–VII Sec.","5th–7th C."),title:T("La Chiesa Longobarda","The Longobard Church"),text:T("Nel 1981 emersero le mura di una chiesa longobarda e i resti di una villa romana con terme. Pratola Serra è ora nell'itinerario 'Longobard Ways Across Europe'.","In 1981 workers unearthed a Longobard-era church and a Roman villa with thermal baths. Pratola Serra is now on the 'Longobard Ways Across Europe' itinerary."),color:"#9B6B9E",icon:"⛪"},
+          {era:"1500–1806",title:T("I Tocco e il Carcere","The Tocco Era & Prison"),text:T("Il detto 'Puozzi passà p'a Pratola' era una maledizione: la strada per il carcere borbonico di Montefusco passava per il corso principale.","The saying 'Puozzi passà p'a Pratola' was a curse: the road to the Bourbon Prison of Montefusco ran through Pratola's main street."),color:"#C25B3A",icon:"⚔️"},
+          {era:"1812",title:T("Nascita del Comune","Birth of a Comune"),text:T("Pratola e Serra si unirono per decreto napoleonico. Serra di Pratola, arroccato attorno al castello medievale sulla Valle del Sabato.","Pratola and Serra merged by Napoleonic decree. Serra di Pratola perched around its medieval castle above the Sabato Valley."),color:"#D4A853",icon:"🏛️"},
+          {era:"1880–1920",title:T("La Grande Emigrazione","The Great Emigration"),text:T("I Pratolani partirono per l'America via Ellis Island. Gli Altavilla a Wilkes-Barre, i Pisano nel 1898. Entro il 1920, comunità in Pennsylvania, New York e New England.","Pratolani journeyed to America via Ellis Island. The Altavilla family to Wilkes-Barre, the Pisano family in 1898. By 1920, communities across PA, NY, and New England."),color:"#D4A853",icon:"🚢"},
+          {era:T("Anni '50","1950s"),title:T("I Mattonai di Bedford","The Bedford Brickworkers"),text:T("La London Brick Company reclutò lavoratori campani per la Stewartby Brickworks — la più grande del mondo. Bedford divenne una delle più grandi comunità italiane d'Inghilterra.","The London Brick Co. recruited Campanian workers for Stewartby Brickworks — then the world's largest. Bedford became one of England's largest Italian communities."),color:"#C25B3A",icon:"🧱"},
+          {era:T("Anni '80","1980s"),title:T("Alfa Romeo e FIAT","Alfa Romeo & FIAT"),text:T("La FIAT creò la FMA, producendo 600.000 motori all'anno. Il motore 'Pratola Serra' 2.0 Turbo 20V (217 CV) portava il nome del paese nel mondo.","FIAT created the FMA, producing 600,000 engines/year. The 'Pratola Serra' 2.0 Turbo 20V (217hp) bore the town's name worldwide."),color:"#2E5E3F",icon:"🏎️"},
+          {era:T("Oggi","Today"),title:T("3.700 a Casa, 2.000+ nel Mondo","3,700 at Home, 2,000+ Worldwide"),text:T("Pratola Serra a 280m s.l.m. La Festa della Madonna Addolorata riempie le strade ogni settembre. Il gruppo Facebook collega oltre 2.000 membri dal 2014.","Pratola Serra at 280m. The Festa della Madonna Addolorata fills the streets every September. The Facebook group has connected 2,000+ members since 2014."),color:"#D4A853",icon:"🌍"},
+        ]].map((item,i)=>(
           <div key={i} style={{display:"flex",gap:16,marginBottom:28,position:"relative"}}>
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,width:32}}>
-              <div style={{width:32,height:32,borderRadius:"50%",background:`${item.color}22`,border:`2px solid ${item.color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,marginBottom:4}}>{item.icon}</div>
+              <div style={{width:32,height:32,borderRadius:"50%",background:`${item.color}22`,border:`2px solid ${item.color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>{item.icon}</div>
               <div style={{flex:1,width:2,background:`linear-gradient(${item.color}66, ${item.color}11)`,borderRadius:1}}/>
             </div>
             <div style={{flex:1,paddingBottom:8}}>
@@ -481,22 +517,17 @@ export default function PratolaniNelMondo(){
 
       {/* ═══ PHOTO GALLERY ═══ */}
       <section style={{padding:"32px 16px 40px",maxWidth:780,margin:"0 auto"}}>
-        <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:6}}>{lang==="it"?"Immagini del Nostro Paese":"Images of Our Town"}</div>
-        <h2 style={{fontSize:22,fontWeight:800,fontFamily:"'Playfair Display',serif",margin:"0 0 8px"}}>{lang==="it"?"Pratola Serra in Immagini":"Pratola Serra in Pictures"}</h2>
-        <p style={{fontSize:13,color:"#777",marginBottom:20,lineHeight:1.6}}>{lang==="it"?"Tocca una foto per ingrandirla. Dalle rovine del castello alla Valle del Sabato, dai vigneti del Taurasi alle fabbriche di mattoni di Bedford — le immagini della nostra storia.":"Tap a photo to enlarge. From the castle ruins to the Sabato Valley, from Taurasi vineyards to the Bedford brickworks — images of our story."}</p>
+        <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:6}}>{T("Immagini del Nostro Paese","Images of Our Town")}</div>
+        <h2 style={{fontSize:22,fontWeight:800,fontFamily:"'Playfair Display',serif",margin:"0 0 8px"}}>{T("Pratola Serra in Immagini","Pratola Serra in Pictures")}</h2>
+        <p style={{fontSize:13,color:"#777",marginBottom:20,lineHeight:1.6}}>{T("Tocca una foto per ingrandirla.","Tap a photo to enlarge.")}</p>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:10}}>
           {PHOTOS.map((ph,i)=>(
-            <div key={i} onClick={()=>setLightbox(i)} style={{
-              aspectRatio:"4/3",borderRadius:12,overflow:"hidden",cursor:"zoom-in",
-              position:"relative",border:"1px solid #1a2b45",
-              transition:"transform 0.3s, box-shadow 0.3s",
-            }}
+            <div key={i} onClick={()=>setLightbox(i)} style={{aspectRatio:"4/3",borderRadius:12,overflow:"hidden",cursor:"zoom-in",position:"relative",border:"1px solid #1a2b45",transition:"transform 0.3s, box-shadow 0.3s"}}
             onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.03)";e.currentTarget.style.boxShadow="0 8px 30px rgba(212,168,83,0.2)";}}
             onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="none";}}>
-              <img src={ph.src} alt={ph.alt} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}
-                onError={e=>{e.target.style.display="none";e.target.parentElement.style.background="linear-gradient(135deg,#1a2b4566,#111827)";}}/>
+              <img src={ph.src} alt={ph.alt} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} onError={e=>{e.target.style.display="none";e.target.parentElement.style.background="linear-gradient(135deg,#1a2b4566,#111827)";}}/>
               <div style={{position:"absolute",bottom:0,left:0,right:0,background:"linear-gradient(transparent,rgba(0,0,0,0.85))",padding:"20px 10px 8px"}}>
-                <div style={{fontSize:11,fontWeight:700,color:"#F6F1E7"}}>{lang==="it"?ph.captionIt:ph.captionEn}</div>
+                <div style={{fontSize:11,fontWeight:700,color:"#F6F1E7"}}>{T(ph.captionIt,ph.captionEn)}</div>
               </div>
               <div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.5)",borderRadius:20,padding:"2px 8px",fontSize:9,color:"#D4A853"}}>🔍</div>
             </div>
@@ -507,12 +538,12 @@ export default function PratolaniNelMondo(){
       {/* ═══ WINES & FOOD ═══ */}
       <section style={{padding:"20px 16px",maxWidth:680,margin:"0 auto"}}>
         <div style={{background:"linear-gradient(135deg,#1a0f05,#2a1a0a)",borderRadius:16,padding:24,border:"1px solid #3a2515"}}>
-          <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:8}}>{T("Sapori di Casa","Tastes of Home")}</div>
-          <h3 style={{fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",margin:"0 0 12px",color:"#F6F1E7"}}>{T("I Sapori di Pratola Serra","The Tastes of Pratola Serra")}</h3>
+          <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:8}}>{lang==="it"?"Sapori di Casa":"Tastes of Home"}</div>
+          <h3 style={{fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",margin:"0 0 12px",color:"#F6F1E7"}}>{lang==="it"?"I Sapori di Pratola Serra":"The Tastes of Pratola Serra"}</h3>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,fontSize:12,color:"#bba080",lineHeight:1.7}}>
             <div>
               <div style={{fontWeight:700,color:"#D4A853",marginBottom:4}}>🍷 {T("Tre Vini DOCG","Three DOCG Wines")}</div>
-              <div>{T("Taurasi, Greco di Tufo e Fiano di Avellino — tre dei migliori vini della Campania e d'Italia, prodotti nelle colline attorno a Pratola Serra.","Taurasi, Greco di Tufo, and Fiano di Avellino — three of the finest wines Campania and Italy have to offer, produced in the hills surrounding Pratola Serra.")}</div>
+              <div>{T("Taurasi, Greco di Tufo e Fiano di Avellino — tre dei migliori vini della Campania, prodotti nelle colline attorno a Pratola Serra.","Taurasi, Greco di Tufo, and Fiano di Avellino — three of the finest wines Campania has to offer, produced in the hills surrounding Pratola Serra.")}</div>
             </div>
             <div>
               <div style={{fontWeight:700,color:"#D4A853",marginBottom:4}}>🧀 {T("Specialità Locali","Local Specialties")}</div>
