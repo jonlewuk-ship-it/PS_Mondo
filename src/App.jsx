@@ -100,7 +100,6 @@ const FRAZIONI = ["Serra di Pratola","San Michele di Pratola","Nocione","Acquavi
 
 const GEN_COLORS = {"1st":"#D4A853","2nd":"#2E5E3F","3rd":"#5B7DB1","4th":"#9B6B9E","resident":"#C25B3A"};
 
-const STORAGE_KEY = "pratolani-mondo-v2";
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function lookupCity(city,country){
@@ -170,15 +169,13 @@ export default function PratolaniNelMondo(){
           setPins([...SEED_DATA,...mapped]);
         }
       }catch(e){
-        // Fallback to localStorage if Supabase fails
-        try{const v=localStorage.getItem(STORAGE_KEY);if(v){const saved=JSON.parse(v);if(saved.length>0)setPins([...SEED_DATA,...saved]);}}catch(e2){}
+        console.warn("Supabase load failed",e);
       }
       setLoaded(true);
     })();
   },[]);
 
-  // Save user pins only
-  useEffect(()=>{if(!loaded)return;const userPins=pins.filter(p=>!p.id.startsWith("s"));try{localStorage.setItem(STORAGE_KEY,JSON.stringify(userPins));}catch(e){}},[pins,loaded]);
+
 
   // Load Leaflet
   useEffect(()=>{
