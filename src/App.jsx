@@ -131,12 +131,12 @@ function AnimCount({target,duration=1500}){
 
 // ── PHOTO GALLERY DATA ─────────────────────────────────────────────
 const PHOTOS = [
-  {id:0, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Panorama_di_Pratola_Serra.jpg/1280px-Panorama_di_Pratola_Serra.jpg", alt:"Panorama di Pratola Serra", captionIt:"Panorama di Pratola Serra", captionEn:"Panorama of Pratola Serra", descIt:"Vista panoramica del borgo sulla Valle del Sabato, 280m s.l.m.", descEn:"Panoramic view of the town above the Sabato Valley, 280m a.s.l."},
-  {id:1, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Chiesa_madre_di_Pratola_Serra.jpg/800px-Chiesa_madre_di_Pratola_Serra.jpg", alt:"Chiesa Madre", captionIt:"Chiesa di Maria SS. Addolorata", captionEn:"Church of Maria SS. Addolorata", descIt:"La chiesa madre, sede della festa patronale ogni prima domenica di settembre.", descEn:"The mother church, home to the patron saint festival every first Sunday of September."},
-  {id:2, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Pratola_Serra_-_Ruderi_del_Castello.jpg/800px-Pratola_Serra_-_Ruderi_del_Castello.jpg", alt:"Ruderi del Castello", captionIt:"I Ruderi del Castello", captionEn:"The Castle Ruins", descIt:"Le rovine del castello medievale di Serra di Pratola.", descEn:"The medieval castle ruins of Serra di Pratola."},
-  {id:3, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Stewartby_Brickworks_-_geograph.org.uk_-_305820.jpg/1280px-Stewartby_Brickworks_-_geograph.org.uk_-_305820.jpg", alt:"Stewartby Brickworks", captionIt:"Stewartby Brickworks, Bedford", captionEn:"Stewartby Brickworks, Bedford", descIt:"La più grande fabbrica di mattoni del mondo anni '50, dove lavorarono centinaia di Pratolani.", descEn:"The world's largest brickworks in the 1950s, where hundreds of Pratolani worked."},
-  {id:4, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Ellis_island_1902.jpg/1280px-Ellis_island_1902.jpg", alt:"Ellis Island", captionIt:"Ellis Island, c. 1902", captionEn:"Ellis Island, c. 1902", descIt:"La porta d'ingresso per milioni di emigranti italiani, incluse le famiglie Altavilla e Pisano.", descEn:"The gateway for millions of Italian immigrants, including the Altavilla and Pisano families."},
-  {id:5, src:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Taurasi_vineyards.jpg/1280px-Taurasi_vineyards.jpg", alt:"Vigneti del Taurasi", captionIt:"I Vigneti del Taurasi DOCG", captionEn:"Taurasi DOCG Vineyards", descIt:"Le colline che producono il Taurasi, il 'Barolo del Sud'.", descEn:"The hills that produce Taurasi, the 'Barolo of the South'."},
+  {id:0, src:"https://upload.wikimedia.org/wikipedia/commons/2/2d/Serra_di_Pratola.JPG", alt:"Serra di Pratola", captionIt:"Serra di Pratola", captionEn:"Serra di Pratola", descIt:"Il borgo antico arroccato sulla collina, cuore storico del comune.", descEn:"The ancient village perched on the hill, the historic heart of the comune."},
+  {id:1, src:"https://upload.wikimedia.org/wikipedia/commons/b/b2/Panorama_Pratola.jpg", alt:"Panorama Pratola Serra", captionIt:"Panorama di Pratola Serra", captionEn:"Panorama of Pratola Serra", descIt:"Vista panoramica dalla collina sulla Valle del Sabato, 280m s.l.m.", descEn:"Panoramic view from the hill over the Sabato Valley, 280m above sea level."},
+  {id:2, src:"https://upload.wikimedia.org/wikipedia/commons/1/1e/Ellis_Island_arrivals.jpg", alt:"Ellis Island", captionIt:"Arrivi a Ellis Island", captionEn:"Ellis Island Arrivals", descIt:"Emigranti in arrivo a Ellis Island. Le famiglie Altavilla e Pisano di Pratola Serra passarono da qui.", descEn:"Immigrants arriving at Ellis Island. The Altavilla and Pisano families of Pratola Serra passed through here."},
+  {id:3, src:"https://upload.wikimedia.org/wikipedia/commons/d/dc/Stewartby_brickworks_chimneys_-_geograph.org.uk_-_481075.jpg", alt:"Stewartby Brickworks", captionIt:"Stewartby Brickworks, Bedford", captionEn:"Stewartby Brickworks, Bedford", descIt:"La fabbrica di mattoni dove lavorarono centinaia di Pratolani negli anni '50.", descEn:"The brickworks where hundreds of Pratolani worked in the 1950s."},
+  {id:4, src:"https://upload.wikimedia.org/wikipedia/commons/4/41/Vigneti_a_Taurasi.jpg", alt:"Vigneti di Taurasi", captionIt:"I Vigneti del Taurasi DOCG", captionEn:"Taurasi DOCG Vineyards", descIt:"Le colline irpine che producono il Taurasi, il 'Barolo del Sud'.", descEn:"The Irpinian hills that produce Taurasi, the 'Barolo of the South'."},
+  {id:5, src:"https://upload.wikimedia.org/wikipedia/commons/6/6e/1997_Fiat_Coupe_20VT_%284545381753%29.jpg", alt:"Fiat Coupé 20V Turbo", captionIt:"Fiat Coupé 20V Turbo — Motore Pratola Serra", captionEn:"Fiat Coupé 20V Turbo — Pratola Serra Engine", descIt:"Il motore 'Pratola Serra' 2.0 Turbo 20V (217 CV) portava il nome del paese nel mondo.", descEn:"The 'Pratola Serra' 2.0 Turbo 20V (217hp) engine bore the town's name worldwide."},
 ];
 
 // ── MAIN APP ───────────────────────────────────────────────────────
@@ -337,10 +337,12 @@ export default function PratolaniNelMondo(){
             style={{padding:"12px 24px",borderRadius:24,border:"none",background:"#D4A853",color:"#0B1320",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Source Sans 3',sans-serif"}}>
             {lang==="it"?"📍 Aggiungi il Tuo Pin":"📍 Add Your Pin"}
           </button>
+          {/* CSV Import hidden — uncomment to restore
           <button onClick={importCsv}
             style={{padding:"12px 20px",borderRadius:24,border:"1px solid #333",background:"transparent",color:"#999",fontSize:13,cursor:"pointer"}}>
             📥 Import CSV
           </button>
+          */}
         </div>
       </header>
 
@@ -594,4 +596,3 @@ export default function PratolaniNelMondo(){
     </div>
   );
 }
-
