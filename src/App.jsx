@@ -337,12 +337,7 @@ export default function PratolaniNelMondo(){
             style={{padding:"12px 24px",borderRadius:24,border:"none",background:"#D4A853",color:"#0B1320",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Source Sans 3',sans-serif"}}>
             {lang==="it"?"📍 Aggiungi il Tuo Pin":"📍 Add Your Pin"}
           </button>
-          {/* CSV Import hidden — uncomment to restore
-          <button onClick={importCsv}
-            style={{padding:"12px 20px",borderRadius:24,border:"1px solid #333",background:"transparent",color:"#999",fontSize:13,cursor:"pointer"}}>
-            📥 Import CSV
-          </button>
-          */}
+
         </div>
       </header>
 
