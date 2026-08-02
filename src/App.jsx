@@ -286,13 +286,6 @@ export default function PratolaniNelMondo(){
     setShowForm(false);setNeedsCoords(false);
   };
 
-  const importCsv=()=>{
-    const input=document.createElement("input");input.type="file";input.accept=".csv,.txt";
-    input.onchange=async(e)=>{const f=e.target.files[0];if(!f)return;const t=await f.text();const lines=t.split("\n").map(l=>l.trim()).filter(Boolean);const np=[];
-      lines.forEach(line=>{const p=line.split(",").map(s=>s.trim().replace(/^"|"$/g,""));if(p.length<3)return;const[name,surname,city,country=""]=p;if(!surname||!city||surname.toLowerCase()==="surname")return;const c=lookupCity(city,country);if(c)np.push({id:uid(),name,surname,city,country,lat:c.lat,lng:c.lng,generation:"2nd",frazione:""});});
-      if(np.length>0)setPins(prev=>[...prev,...np]);alert(`Added ${np.length} pins!`);};
-    input.click();
-  };
 
   const T=(it,en)=>lang==="it"?it:en;
   const IS={width:"100%",padding:"10px 12px",borderRadius:8,border:"1px solid #333",fontSize:14,fontFamily:"'Source Sans 3',sans-serif",color:"#F6F1E7",background:"#1a1a2e",outline:"none",boxSizing:"border-box"};
@@ -410,7 +403,7 @@ export default function PratolaniNelMondo(){
             onMouseLeave={e=>e.currentTarget.style.borderColor="#1a2b45"}>
             <div style={{fontSize:20,marginBottom:8}}>📍</div>
             <div style={{fontSize:16,fontWeight:700,color:"#D4A853",fontFamily:"'Playfair Display',serif"}}>{lang==="it"?"Dove sei nel mondo?":"Where are you in the world?"}</div>
-            <div style={{fontSize:12,color:"#666",marginTop:4}}>{lang==="it"?"Tocca per aggiungerti alla mappa · Importa CSV disponibile":"Tap to add yourself to the map · CSV import available for group data"}</div>
+            <div style={{fontSize:12,color:"#666",marginTop:4}}>{lang==="it"?"Tocca per aggiungerti alla mappa":"Tap to add yourself to the map"}</div>
           </div>
         )}
       </div>
