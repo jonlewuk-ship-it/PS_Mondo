@@ -11,3 +11,4 @@ Interactive diaspora map connecting 2,000+ Pratolani from Pratola Serra (Avellin
 - Leaflet + CartoDB Dark tiles
 - localStorage persistence
 - Deployed on Vercel
+# Deployed 2026-08-02T21:28:43Z
