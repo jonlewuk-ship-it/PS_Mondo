@@ -129,15 +129,6 @@ function AnimCount({target,duration=1500}){
 }
 
 
-// ── PHOTO GALLERY DATA ─────────────────────────────────────────────
-const PHOTOS = [
-  {id:0, src:"https://upload.wikimedia.org/wikipedia/commons/2/2d/Serra_di_Pratola.JPG", alt:"Serra di Pratola", captionIt:"Serra di Pratola", captionEn:"Serra di Pratola", descIt:"Il borgo antico arroccato sulla collina, cuore storico del comune di Pratola Serra.", descEn:"The ancient village perched on the hill, the historic heart of Pratola Serra."},
-  {id:1, src:"https://upload.wikimedia.org/wikipedia/commons/a/a7/La_Basilica_di_San_Giovanni_di_Pratola_oggi.jpg", alt:"Basilica di San Giovanni", captionIt:"Basilica di San Giovanni di Pratola", captionEn:"Basilica of San Giovanni di Pratola", descIt:"La basilica nel cuore di Pratola, testimonianza della fede e della storia del paese.", descEn:"The basilica in the heart of Pratola, a testament to the town's faith and history."},
-  {id:2, src:"https://upload.wikimedia.org/wikipedia/commons/6/63/1997_Fiat_Coupe_20VT_%284545381753%29.jpg", alt:"Fiat Coupé 20V Turbo", captionIt:"Fiat Coupé 20V Turbo — Motore Pratola Serra", captionEn:"Fiat Coupé 20V Turbo — Pratola Serra Engine", descIt:"Il leggendario motore 'Pratola Serra' 2.0 Turbo 20V da 217 CV portava il nome del paese nel mondo.", descEn:"The legendary 'Pratola Serra' 2.0 Turbo 20V (217hp) engine bore the town's name worldwide."},
-  {id:3, src:"https://upload.wikimedia.org/wikipedia/commons/2/2f/1997_Fiat_Coupe_20VT_Engine_%284545378923%29.jpg", alt:"Motore Pratola Serra", captionIt:"Il Motore Pratola Serra 20V Turbo", captionEn:"The Pratola Serra 20V Turbo Engine", descIt:"Prodotto nello stabilimento FMA di Pratola Serra — fino a 600.000 motori all'anno.", descEn:"Produced at the FMA plant in Pratola Serra — up to 600,000 engines per year."},
-  {id:4, src:"https://upload.wikimedia.org/wikipedia/commons/a/ab/Fiat_Coupe_20VT_1998_motor.JPG", alt:"Fiat Coupé motore", captionIt:"Stabilimento FMA Pratola Serra", captionEn:"FMA Plant Pratola Serra", descIt:"La FIAT creò la FMA nel 1994, trasformando Pratola Serra in un centro industriale di livello mondiale.", descEn:"FIAT created the FMA in 1994, transforming Pratola Serra into a world-class industrial center."},
-  {id:5, src:"https://upload.wikimedia.org/wikipedia/commons/4/4b/Pratola_Serra-Stemma.svg", alt:"Stemma di Pratola Serra", captionIt:"Stemma di Pratola Serra", captionEn:"Coat of Arms of Pratola Serra", descIt:"Lo stemma ufficiale del Comune di Pratola Serra, Avellino, Campania.", descEn:"The official coat of arms of the Municipality of Pratola Serra, Avellino, Campania."},
-];
 
 // ── MAIN APP// ── MAIN APP// ── MAIN APP ───────────────────────────────────────────────────────
 export default function PratolaniNelMondo(){
@@ -147,7 +138,7 @@ export default function PratolaniNelMondo(){
   const[leafletReady,setLeafletReady]=useState(false);
   const[loaded,setLoaded]=useState(false);
   const[lang,setLang]=useState("it");
-  const[lightbox,setLightbox]=useState(null);
+
   const mapRef=useRef(null);
   const mapInstance=useRef(null);
   const markersRef=useRef([]);
@@ -293,18 +284,6 @@ export default function PratolaniNelMondo(){
   return(
     <div style={{background:"#0B1320",color:"#F6F1E7",fontFamily:"'Source Sans 3','Inter',system-ui,sans-serif",minHeight:"100vh"}}>
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-      {/* ═══ LIGHTBOX ═══ */}
-      {lightbox!==null&&<div onClick={()=>setLightbox(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"zoom-out",padding:16}}>
-        <button onClick={()=>setLightbox(null)} style={{position:"absolute",top:16,right:20,background:"none",border:"none",color:"#D4A853",fontSize:32,cursor:"pointer",zIndex:10000}}>✕</button>
-        <div style={{maxWidth:900,width:"100%",animation:"fadeUp 0.3s ease"}}>
-          <img src={PHOTOS[lightbox]?.src} alt={PHOTOS[lightbox]?.alt} style={{width:"100%",borderRadius:12,boxShadow:"0 20px 60px rgba(0,0,0,0.8)"}} onError={e=>{e.target.style.display="none";}}/>
-          <div style={{textAlign:"center",marginTop:16}}>
-            <div style={{fontSize:18,fontWeight:700,color:"#F6F1E7",fontFamily:"'Playfair Display',serif"}}>{T(PHOTOS[lightbox]?.captionIt,PHOTOS[lightbox]?.captionEn)}</div>
-            <div style={{fontSize:12,color:"#888",marginTop:6}}>{T(PHOTOS[lightbox]?.descIt,PHOTOS[lightbox]?.descEn)}</div>
-          </div>
-        </div>
-      </div>}
-
       <style>{`
         .dark-popup .leaflet-popup-content-wrapper{background:#1a1a2e!important;border:1px solid #333!important;border-radius:12px!important;color:#F6F1E7!important;box-shadow:0 8px 32px rgba(0,0,0,.5)!important}
         .dark-popup .leaflet-popup-tip{background:#1a1a2e!important;border:1px solid #333!important}
@@ -502,24 +481,29 @@ export default function PratolaniNelMondo(){
         ))}
       </section>
 
-      {/* ═══ PHOTO GALLERY ═══ */}
-      <section style={{padding:"32px 16px 40px",maxWidth:780,margin:"0 auto"}}>
-        <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:6}}>{T("Immagini del Nostro Paese","Images of Our Town")}</div>
-        <h2 style={{fontSize:22,fontWeight:800,fontFamily:"'Playfair Display',serif",margin:"0 0 8px"}}>{T("Pratola Serra in Immagini","Pratola Serra in Pictures")}</h2>
-        <p style={{fontSize:13,color:"#777",marginBottom:20,lineHeight:1.6}}>{T("Tocca una foto per ingrandirla.","Tap a photo to enlarge.")}</p>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:10}}>
-          {PHOTOS.map((ph,i)=>(
-            <div key={i} onClick={()=>setLightbox(i)} style={{aspectRatio:"4/3",borderRadius:12,overflow:"hidden",cursor:"zoom-in",position:"relative",border:"1px solid #1a2b45",transition:"transform 0.3s, box-shadow 0.3s"}}
-            onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.03)";e.currentTarget.style.boxShadow="0 8px 30px rgba(212,168,83,0.2)";}}
+      {/* ═══ FACEBOOK GROUP PREVIEW ═══ */}
+      <section style={{padding:"32px 16px 40px",maxWidth:520,margin:"0 auto"}}>
+        <a href="https://www.facebook.com/share/g/1PekAWWgNc/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"block"}}>
+          <div style={{background:"linear-gradient(135deg,#111827,#1a2b45)",borderRadius:16,border:"1px solid #1a2b45",overflow:"hidden",transition:"transform 0.3s, box-shadow 0.3s",cursor:"pointer"}}
+            onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.02)";e.currentTarget.style.boxShadow="0 8px 30px rgba(212,168,83,0.15)";}}
             onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="none";}}>
-              <img src={ph.src} alt={ph.alt} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} onError={e=>{e.target.style.display="none";e.target.parentElement.style.background="linear-gradient(135deg,#1a2b4566,#111827)";}}/>
-              <div style={{position:"absolute",bottom:0,left:0,right:0,background:"linear-gradient(transparent,rgba(0,0,0,0.85))",padding:"20px 10px 8px"}}>
-                <div style={{fontSize:11,fontWeight:700,color:"#F6F1E7"}}>{T(ph.captionIt,ph.captionEn)}</div>
+            <div style={{padding:"24px 20px",textAlign:"center"}}>
+              <div style={{fontSize:40,marginBottom:12}}>👥</div>
+              <div style={{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#D4A853",marginBottom:8}}>{T("IL NOSTRO GRUPPO","OUR GROUP")}</div>
+              <div style={{fontSize:20,fontWeight:700,fontFamily:"'Playfair Display',serif",color:"#F6F1E7",marginBottom:6}}>Pratolani nel Mondo</div>
+              <div style={{fontSize:13,color:"#999",lineHeight:1.6,marginBottom:16}}>{T("Il gruppo Facebook che connette oltre 2.000 Pratolani in ogni continente. Condividi ricordi, foto e storie della nostra terra.","The Facebook group connecting 2,000+ Pratolani across every continent. Share memories, photos, and stories of our homeland.")}</div>
+              <div style={{display:"flex",justifyContent:"center",gap:16,marginBottom:16,fontSize:12,color:"#888"}}>
+                <span>👥 2.000+ {T("membri","members")}</span>
+                <span>🌍 {T("10+ paesi","10+ countries")}</span>
+                <span>📅 {T("Dal 2014","Since 2014")}</span>
               </div>
-              <div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.5)",borderRadius:20,padding:"2px 8px",fontSize:9,color:"#D4A853"}}>🔍</div>
+              <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 24px",borderRadius:20,background:"#1877F2",color:"#fff",fontSize:14,fontWeight:700}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                {T("Unisciti al Gruppo","Join the Group")}
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        </a>
       </section>
 
       {/* ═══ WINES & FOOD ═══ */}
